@@ -21,7 +21,9 @@ public class ApiTask extends DefaultTask{
 	}
 
 	@Inject
-	public ApiTask() {}
+	public ApiTask() {
+		//Empty for inject
+	}
 
 	@TaskAction
 	public void buildApi() throws IOException {
