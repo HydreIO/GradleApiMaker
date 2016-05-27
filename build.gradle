@@ -1,0 +1,38 @@
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+
+group = 'fr.aresrpg.gradle'
+version = '0.1'
+
+compileJava.options.encoding = 'UTF-8'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile gradleApi()
+    runtime 'org.ow2.asm:asm:5.1'
+}
+
+publishing {
+    repositories {
+        maven {
+            url 'https://artifactory.aresrpg.fr/gradle'
+            credentials {
+                username project.hasProperty('aresuser') ? aresuser : System.getenv('aresuser')
+                password project.hasProperty('arespass') ? arespass : System.getenv('arespass')
+            }
+        }
+    }
+
+    publications {
+        main(MavenPublication){
+            from components.java
+        }
+    }
+}
