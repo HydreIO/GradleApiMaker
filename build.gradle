@@ -1,4 +1,3 @@
-apply plugin: 'api'
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 
