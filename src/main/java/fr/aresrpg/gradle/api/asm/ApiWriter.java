@@ -6,6 +6,8 @@ public class ApiWriter extends ClassWriter{
 	private static final String OBJECT_INIT = "<init>";
 	private static final String CLASS_INIT = "<clinit>";
 
+	private String superName;
+
 	public ApiWriter() {
 		super(Opcodes.ASM5);
 	}
@@ -14,24 +16,28 @@ public class ApiWriter extends ClassWriter{
 		if(CLASS_INIT.equals(name))
 			return visitMethod(access , name , desc , signature , exceptions);
 		else
-			return new ApiMethodWriter(visitMethod(access , name , desc , signature , exceptions), signature == null ? null : Type.getReturnType(signature), OBJECT_INIT.equals(name));
+			return new ApiMethodWriter(visitMethod(access , name , desc , signature , exceptions), signature == null ? null : Type.getReturnType(signature), OBJECT_INIT.equals(name), superName);
 	}
 
-	private class ApiMethodWriter extends MethodVisitor{
+	public void setSuperName(String superName) {
+		this.superName = superName;
+	}
+
+	private static class ApiMethodWriter extends MethodVisitor{
 		private final MethodVisitor delegate;
 		private final Type returnType;
 		private final boolean init;
+		private final String superName;
 		private Label first;
 		private int stacks;
-		private int index;
 
-		public ApiMethodWriter(MethodVisitor delegate, Type returnType, boolean init) {
+		public ApiMethodWriter(MethodVisitor delegate, Type returnType, boolean init, String superName) {
 			super(Opcodes.ASM5);
 			this.delegate = delegate;
 			this.returnType = returnType;
 			this.init = init;
-			this.stacks = 0;
-			this.index = 1;
+			this.superName = superName;
+			this.stacks = 1;//For this
 		}
 
 		@Override
@@ -54,9 +60,8 @@ public class ApiWriter extends ClassWriter{
 			if("this".equals(name)){
 				delegate.visitLocalVariable(name, desc, signature, start, end, 0);
 			} else if(first == start){
-				delegate.visitLocalVariable(name, desc, signature, start, end, this.index++);
+				delegate.visitLocalVariable(name, desc, signature, start, end, this.stacks++);
 				first = start;
-				stacks++;
 			}
 		}
 
@@ -67,7 +72,7 @@ public class ApiWriter extends ClassWriter{
 			delegate.visitLabel(l0);
 			if(init){
 				delegate.visitVarInsn(Opcodes.ALOAD, 0);
-				delegate.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", OBJECT_INIT, "()V", false);//Ignore heritage
+				delegate.visitMethodInsn(Opcodes.INVOKESPECIAL, superName, OBJECT_INIT, "()V", false);//Ignore heritage
 				delegate.visitInsn(Opcodes.RETURN);
 			} else if(returnType == null){
 				delegate.visitInsn(Opcodes.RETURN);
@@ -75,6 +80,10 @@ public class ApiWriter extends ClassWriter{
 				delegate.visitInsn(Opcodes.ACONST_NULL);
 				delegate.visitInsn(Opcodes.ARETURN);
 			}
+		}
+
+		@Override
+		public void visitEnd() {
 			Label l1 = new Label();
 			delegate.visitLabel(l1);
 			visitMaxs();
@@ -88,7 +97,7 @@ public class ApiWriter extends ClassWriter{
 		}
 
 		public void visitMaxs() {
-			delegate.visitMaxs(init ? 1 : returnType == null ? 0 : 1, stacks+1);//+1 for this
+			delegate.visitMaxs(init ? 1 : (returnType == null ? 0 : 1), stacks);
 		}
 	}
 }

@@ -9,6 +9,12 @@ public class LibraryReader extends ClassVisitor{
 	}
 
 	@Override
+	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+		((ApiWriter)cv).setSuperName(superName);
+		cv.visit(version, access, name, signature, superName, interfaces);
+	}
+
+	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
 		return ((ApiWriter)cv).writeApiMethod(access, name, desc, signature, exceptions);
 	}

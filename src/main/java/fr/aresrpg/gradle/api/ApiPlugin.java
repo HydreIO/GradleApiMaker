@@ -37,6 +37,7 @@ public class ApiPlugin implements Plugin<Project> {
 		ApiJarTask apiJarTask = project.getTasks().create(ApiJarTask.NAME , ApiJarTask.class);
 		apiJarTask.getDependsOn().add(apiTask);
 		apiJarTask.from(apiTask.getOutputFolder());
+		apiJarTask.setOnlyIf((e) -> apiTask.getState().getExecuted());
 		return apiJarTask;
 	}
 
