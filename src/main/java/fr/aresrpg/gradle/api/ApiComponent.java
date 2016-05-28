@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class ApiComponent implements SoftwareComponentInternal{
 	public static final String NAME = "api";
-	private final ApiUsage usage;
+	private final Usage usage;
 
 	public ApiComponent(SoftwareComponentInternal parent , PublishArtifact artifact) {
 		this.usage = new ApiUsage(parent.getUsages().iterator().next() , artifact);

@@ -2,6 +2,7 @@ package fr.aresrpg.gradle.api.task;
 
 import fr.aresrpg.gradle.api.asm.ApiWriter;
 import fr.aresrpg.gradle.api.asm.LibraryReader;
+import fr.aresrpg.gradle.api.util.ExtensionFileFilter;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.*;
 import org.objectweb.asm.ClassReader;
@@ -33,7 +34,7 @@ public class ApiTask extends DefaultTask{
 	}
 
 	protected void processFolder(File folder) throws IOException {
-		for(File file : folder.listFiles(f -> f.isDirectory() || f.getPath().endsWith(".class"))){
+		for(File file : folder.listFiles(new ExtensionFileFilter("class"))){
 			if(file.isDirectory())
 				processFolder(file);
 			else
