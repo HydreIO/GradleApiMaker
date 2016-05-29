@@ -9,7 +9,7 @@ public class ApiWriter extends ClassWriter{
 	private String superName;
 
 	public ApiWriter() {
-		super(Opcodes.ASM5);
+		super(0);
 	}
 
 	public MethodVisitor writeApiMethod(int access, String name, String desc, String signature, String[] exceptions){
