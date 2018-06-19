@@ -52,8 +52,3 @@ The plugin add one component api , it use same dependencies as java components
         }
     }
  ```
- 
-## Links
-
-* [TeamCity](https://ci.aresrpg.fr/viewType.html?buildTypeId=AresRPG_Gradle_Api)
-* [Artifactory](https://artifactory.aresrpg.fr/gradle/fr/aresrpg/gradle/Api/)
